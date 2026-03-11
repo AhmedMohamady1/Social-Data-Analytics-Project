@@ -9,6 +9,10 @@ import symspellpy
 from langdetect import detect, DetectorFactory
 from deep_translator import GoogleTranslator
 from nltk.corpus import stopwords
+from nltk.corpus import wordnet
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+from nltk import pos_tag
 from textblob import Word
 from symspellpy import SymSpell
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -22,6 +26,10 @@ DetectorFactory.seed = 0
 # Download necessary NLTK data
 nltk.download('stopwords', quiet=True)
 nltk.download('wordnet', quiet=True)
+nltk.download('punkt', quiet=True)
+nltk.download('punkt_tab', quiet=True)
+nltk.download('averaged_perceptron_tagger_eng', quiet=True)
+
 STOPWORDS = set(stopwords.words('english'))
 
 class PreprocessingPipeline:
@@ -31,6 +39,9 @@ class PreprocessingPipeline:
         sym_path = os.path.dirname(symspellpy.__file__)
         dictionary_path = os.path.join(sym_path, "frequency_dictionary_en_82_765.txt")
         self.sym_spell.load_dictionary(dictionary_path, term_index=0, count_index=1)
+        
+        # Initialize Lemmatizer once here to avoid slowing down the pandas .apply() loop
+        self.lemmatizer = WordNetLemmatizer()
 
     def handle_language(self, df, column, mode='drop'):
         """Handles non-English rows: either dropping them or translating them"""
@@ -86,11 +97,33 @@ class PreprocessingPipeline:
     def fix_spelling(self, text):
         suggestions = self.sym_spell.lookup_compound(text, max_edit_distance=2)
         return suggestions[0].term
+        
     def lemmatize_text(self, text):
-        return " ".join([Word(w).lemmatize("v") for w in text.split()])
+        """Lemmatizes text using NLTK POS tagging to accurately handle verbs, nouns, and adjectives."""
+
+        def get_wordnet_pos(treebank_tag):
+            if treebank_tag.startswith('J'):
+                return wordnet.ADJ
+            elif treebank_tag.startswith('V'):
+                return wordnet.VERB
+            elif treebank_tag.startswith('N'):
+                return wordnet.NOUN
+            elif treebank_tag.startswith('R'):
+                return wordnet.ADV
+            else:
+                return wordnet.NOUN 
+
+        tokens = word_tokenize(str(text))
+        pos_tokens = pos_tag(tokens)
+        
+        cleaned_tokens = [
+            self.lemmatizer.lemmatize(word, get_wordnet_pos(tag)) 
+            for word, tag in pos_tokens
+        ]
+        return " ".join(cleaned_tokens)
 
     def extract_subject_tags(self, text):
-        """Regex Extraction for partitioning tags[cite: 11]."""
+        """Regex Extraction for partitioning tags."""
         text = text.lower()
         if any(w in text for w in ['protest', 'embassy', 'rally']): return "Protest/Activism"
         if any(w in text for w in ['drone', 'missile', 'attack']): return "Military Action"
@@ -98,6 +131,19 @@ class PreprocessingPipeline:
 
     def predict_stance(self, df, api_key):
         """Uses gemini-3.1-flash-lite-preview with built-in rate limiting (15 RPM)."""
+        
+        # Inner helper function to clean up Gemini's occasional JSON formatting
+        def clean_stance(text):
+            text = str(text)
+            match = re.search(r'(Anti-Iran|Pro-Iran|Neutral)', text, re.IGNORECASE)
+            if match:
+                # Standardizes capitalization regardless of how Gemini outputted it
+                label = match.group(1).lower()
+                if label == 'anti-iran': return 'Anti-Iran'
+                if label == 'pro-iran': return 'Pro-Iran'
+                return 'Neutral'
+            return "Unknown"
+
         llm = ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite-preview", google_api_key=api_key)
         template = "Analyze the post stance: 'Pro-Iran', 'Anti-Iran', or 'Neutral'. Return only the label.\n\nPost: {post}"
         prompt = PromptTemplate(template=template, input_variables=["post"])
@@ -116,7 +162,9 @@ class PreprocessingPipeline:
                 else:
                     res_text = str(response).strip()
                 
-                results.append(res_text)
+                # Apply the regex cleaner directly to the response before appending
+                cleaned_res = clean_stance(res_text)
+                results.append(cleaned_res)
                 
                 # Wait 4.1 seconds before the next loop iteration
                 time.sleep(4.1) 
@@ -135,10 +183,10 @@ class PreprocessingPipeline:
         return df
 
 def main():
-    parser = argparse.ArgumentParser(description="Configurable Preprocessing Pipeline [cite: 15]")
+    parser = argparse.ArgumentParser(description="Configurable Preprocessing Pipeline")
     parser.add_argument("--input", type=str, required=True)
     parser.add_argument("--output", type=str, required=True)
-    parser.add_argument("--limit", type=int, help="Limit rows processed BEFORE translation [cite: 4]")
+    parser.add_argument("--limit", type=int, help="Limit rows processed BEFORE translation")
     parser.add_argument("--lang_mode", type=str, choices=['drop', 'translate'], default='drop')
     parser.add_argument("--convert_emojis", action="store_true")
     parser.add_argument("--remove_mastodon_artifacts", action="store_true")
