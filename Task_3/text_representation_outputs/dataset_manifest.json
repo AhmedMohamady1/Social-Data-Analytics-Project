@@ -1,0 +1,16 @@
+{
+  "created_utc": "2026-04-10T18:50:29.735908+00:00",
+  "input_csv": "Cleaned_Iran_War_Sentiment_with_Sentiment_Labels.csv",
+  "records_used": 491,
+  "use_all_records": true,
+  "bow_ngram_range": [
+    1,
+    2
+  ],
+  "glove_model_name": "glove-wiki-gigaword-100",
+  "label_distribution": {
+    "neutral": 291,
+    "negative": 195,
+    "positive": 5
+  }
+}
