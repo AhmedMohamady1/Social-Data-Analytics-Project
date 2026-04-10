@@ -1,0 +1,12 @@
+{
+  "style": "original",
+  "representation": "glove",
+  "model_name": "glove-wiki-gigaword-100",
+  "rows": 491,
+  "dimensions": 100,
+  "non_zero_entries": 49100,
+  "density": 1.0,
+  "tokens_total": 10680,
+  "tokens_covered": 10647,
+  "coverage_rate": 0.9969101123595505
+}

@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-04-10T18:50:29.735908+00:00",
+  "created_utc": "2026-04-10T22:28:26.170436+00:00",
   "input_csv": "Cleaned_Iran_War_Sentiment_with_Sentiment_Labels.csv",
   "records_used": 491,
   "use_all_records": true,
@@ -7,7 +7,19 @@
     1,
     2
   ],
-  "glove_model_name": "glove-wiki-gigaword-100",
+  "tfidf_ngram_range": [
+    1,
+    2
+  ],
+  "style_files": {
+    "original": "preprocessing_temp\\Cleaned_Iran_War_Sentiment_style_original.csv",
+    "style_b": "preprocessing_temp\\Cleaned_Iran_War_Sentiment_style_b.csv",
+    "style_c": "preprocessing_temp\\Cleaned_Iran_War_Sentiment_style_c.csv"
+  },
+  "pipeline_scripts": {
+    "style_b": "preprocess_pipeline_B.py",
+    "style_c": "preprocess_pipeline_C.py"
+  },
   "label_distribution": {
     "neutral": 291,
     "negative": 195,
