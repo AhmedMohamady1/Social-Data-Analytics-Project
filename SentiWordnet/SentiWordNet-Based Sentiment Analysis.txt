@@ -1,0 +1,164 @@
+### SentiWordNet-Based Sentiment Analysis
+
+#### 1. Introduction
+
+This section presents the implementation and evaluation of a lexical-based sentiment analysis model using SentiWordNet. The objective of this model is to classify text data into three sentiment categories: **Positive**, **Negative**, and **Neutral**, without relying on training data.
+
+---
+
+#### 2. Methodology
+
+The SentiWordNet model processes each input text through several steps:
+
+##### 2.1 Text Preprocessing
+
+* The input text is converted to lowercase.
+* Tokenization is applied to split text into individual words.
+* Part-of-Speech (POS) tagging is performed to determine the grammatical role of each word.
+
+---
+
+##### 2.2 Word-Level Sentiment Scoring
+
+Each word is mapped to its corresponding synsets in WordNet.
+For each synset, SentiWordNet provides:
+
+* Positive score
+* Negative score
+
+Instead of using only the first synset, the model computes the **average sentiment score across all available synsets**, improving robustness and reducing ambiguity.
+
+---
+
+##### 2.3 Negation Handling
+
+To improve contextual understanding, negation handling is implemented.
+When a negation word (e.g., *not, no, never*) is detected, the sentiment polarity of the following words (within a window of three words) is reversed.
+
+---
+
+##### 2.4 Sentence-Level Sentiment Calculation
+
+The overall sentiment score for each sentence is calculated as:
+
+Final Score = (Sum of Positive Scores − Sum of Negative Scores) / Number of Words
+
+---
+
+##### 2.5 Classification Rule
+
+A threshold-based approach is used to determine the final sentiment label:
+
+* Score > 0.05 → Positive
+* Score < -0.05 → Negative
+* Otherwise → Neutral
+
+This threshold was selected after experimentation to balance sensitivity and accuracy.
+
+---
+
+#### 3. Evaluation Results
+
+The model was evaluated by comparing predicted labels with the ground truth values.
+
+##### 3.1 Overall Accuracy
+
+**Accuracy = 54.58%**
+
+This indicates that the model correctly classified more than half of the dataset samples.
+
+---
+
+##### 3.2 Classification Report
+
+| Class    | Precision | Recall | F1-Score | Support |
+| -------- | --------- | ------ | -------- | ------- |
+| Negative | 0.511     | 0.123  | 0.198    | 195     |
+| Neutral  | 0.592     | 0.832  | 0.691    | 291     |
+| Positive | 0.057     | 0.400  | 0.100    | 5       |
+
+**Averages:**
+
+* Macro Average:
+
+  * Precision: 0.386
+  * Recall: 0.452
+  * F1-score: 0.330
+
+* Weighted Average:
+
+  * Precision: 0.554
+  * Recall: 0.546
+  * F1-score: 0.490
+
+---
+
+##### 3.3 Confusion Matrix
+
+| Actual \ Predicted | Negative | Neutral | Positive |
+| ------------------ | -------- | ------- | -------- |
+| Negative           | 24       | 164     | 7        |
+| Neutral            | 23       | 242     | 26       |
+| Positive           | 0        | 3       | 2        |
+
+---
+
+#### 4. Analysis of Results
+
+The results reveal several important insights:
+
+* The model performs best on the **Neutral class**, achieving high recall (0.832), indicating strong ability to correctly identify neutral sentiment.
+* The **Negative class** suffers from very low recall (0.123), as many negative samples are incorrectly classified as neutral.
+* The **Positive class** shows weak performance due to the extremely small number of samples (only 5), making reliable classification difficult.
+
+A major observation from the confusion matrix is that a large number of negative samples (164 instances) were misclassified as neutral. This indicates that the model is biased toward predicting neutral sentiment, especially when confidence is low.
+
+---
+
+#### 5. Discussion
+
+Several factors explain the observed performance:
+
+* **Class Imbalance:**
+  The dataset is highly imbalanced, with very few positive samples. This significantly affects evaluation metrics and reduces model reliability for minority classes.
+
+* **Context Limitations:**
+  The model relies on word-level sentiment scores and does not fully capture the context of entire sentences.
+
+* **Domain-Specific Language:**
+  The dataset includes political and war-related terminology, which may not be well represented in general-purpose lexical resources.
+
+* **Threshold Sensitivity:**
+  The chosen threshold (0.05) provides a balance between precision and recall. Lower thresholds were tested but resulted in decreased accuracy and increased misclassification.
+
+---
+
+#### 6. Improvements Applied
+
+To enhance performance, several improvements were implemented:
+
+* Averaging sentiment scores across multiple synsets
+* Applying negation handling using a context window
+* Normalizing sentiment scores
+* Tuning classification thresholds
+
+These improvements increased model accuracy from approximately **36% to 54.58%**.
+
+---
+
+#### 7. Limitations
+
+Despite improvements, the model has inherent limitations:
+
+* Inability to fully capture semantic context
+* Sensitivity to word sense ambiguity
+* Limited effectiveness on domain-specific text
+* Strong dependence on dataset distribution
+
+---
+
+#### 8. Conclusion
+
+The SentiWordNet-based sentiment analysis model provides a simple and interpretable approach for sentiment classification without requiring training data. While its performance is limited compared to machine learning models, it serves as a valuable baseline and demonstrates key challenges in analyzing real-world textual data.
+
+The results highlight the importance of context-aware approaches and balanced datasets for achieving higher accuracy in sentiment analysis tasks.
