@@ -3,6 +3,7 @@ Simple Bing Liu Sentiment Analyzer
 ===================================
 Analyzes text sentiment using positive and negative word lists.
 Handles negation words (like 'not') that reverse sentiment.
+Compares results with ground truth labels and calculates accuracy.
 """
 
 import pandas as pd
@@ -15,6 +16,37 @@ def print_info(message):
 
 def print_error(message):
     print(f"[ERROR] {message}")
+
+
+def calculate_accuracy(df, sentiment_name):
+    """
+    Calculate accuracy by comparing bing_liu_sentiment with ground_truth.
+    
+    Returns dict with accuracy metrics for each sentiment class and overall.
+    """
+    if 'ground_truth' not in df.columns:
+        return {}
+    
+    total = len(df)
+    correct = (df[sentiment_name] == df['ground_truth']).sum()
+    
+    # Calculate per-class accuracy
+    sentiments = ['positive', 'negative', 'neutral']
+    accuracy_dict = {
+        'overall': correct / total if total > 0 else 0,
+        'correct': correct,
+        'total': total
+    }
+    
+    for sentiment in sentiments:
+        mask = df['ground_truth'] == sentiment
+        if mask.sum() > 0:
+            class_correct = ((df[sentiment_name] == df['ground_truth']) & mask).sum()
+            accuracy_dict[sentiment] = class_correct / mask.sum()
+        else:
+            accuracy_dict[sentiment] = 0.0
+    
+    return accuracy_dict
 
 
 def save_summary(df, sentiment_name, output_summary_path):
@@ -47,6 +79,17 @@ def save_summary(df, sentiment_name, output_summary_path):
             f.write(f"Average confidence: {df[f'{sentiment_name}_confidence'].mean():.4f}\n")
             f.write(f"Min confidence: {df[f'{sentiment_name}_confidence'].min():.4f}\n")
             f.write(f"Max confidence: {df[f'{sentiment_name}_confidence'].max():.4f}\n")
+            
+            # Add ground truth comparison if available
+            if 'ground_truth' in df.columns:
+                f.write("\n")
+                f.write("Accuracy Comparison with Ground Truth:\n")
+                f.write("-" * 60 + "\n")
+                accuracy = calculate_accuracy(df, sentiment_name)
+                f.write(f"Overall Accuracy: {accuracy['overall']:.4f} ({accuracy['correct']}/{accuracy['total']})\n")
+                f.write(f"Positive Accuracy: {accuracy['positive']:.4f}\n")
+                f.write(f"Negative Accuracy: {accuracy['negative']:.4f}\n")
+                f.write(f"Neutral Accuracy: {accuracy['neutral']:.4f}\n")
             
             f.write("\n")
             f.write("="*60 + "\n")
@@ -312,13 +355,25 @@ def process_file(input_path, output_path, text_column, analyzer, sentiment_name=
         summary_path = output_path.replace('.csv', '_summary.txt')
         save_summary(df, sentiment_name, summary_path)
         
-        # Show summary
+        # Show summary and accuracy
         print("\n" + "="*60)
         print(f"RESULTS: {input_path}")
         print("="*60)
         print(df[sentiment_name].value_counts())
         avg_confidence = df[f'{sentiment_name}_confidence'].mean()
         print(f"Average confidence: {avg_confidence:.4f}")
+        
+        # Print accuracy if ground_truth exists
+        if 'ground_truth' in df.columns:
+            print("\n" + "-"*60)
+            print("ACCURACY COMPARISON WITH GROUND TRUTH:")
+            print("-"*60)
+            accuracy = calculate_accuracy(df, sentiment_name)
+            print(f"Overall Accuracy: {accuracy['overall']:.4f} ({accuracy['correct']}/{accuracy['total']})")
+            print(f"Positive Accuracy: {accuracy['positive']:.4f}")
+            print(f"Negative Accuracy: {accuracy['negative']:.4f}")
+            print(f"Neutral Accuracy: {accuracy['neutral']:.4f}")
+        
         print("="*60 + "\n")
         
         return df
@@ -333,8 +388,8 @@ if __name__ == '__main__':
     BASE_PATH = '/home/el3omda/projects/personal/SDA'
     TEMP_PATH = os.path.join(BASE_PATH, 'Social-Data-Analytics-Project/Task_3/preprocessing_temp')
     OUTPUT_PATH = os.path.join(BASE_PATH, 'Social-Data-Analytics-Project/Task_3/Bing_liu')
-    POS_FILE = os.path.join(BASE_PATH, 'positive-words.txt')
-    NEG_FILE = os.path.join(BASE_PATH, 'negative-words.txt')
+    POS_FILE = os.path.join(BASE_PATH, 'Social-Data-Analytics-Project/Task_3/Bing_liu/positive-words.txt')
+    NEG_FILE = os.path.join(BASE_PATH, 'Social-Data-Analytics-Project/Task_3/Bing_liu/negative-words.txt')
     
     # Check all paths exist
     if not os.path.exists(TEMP_PATH):
