@@ -1,0 +1,13 @@
+Representation,Style,Model,Accuracy,F1_Macro,Positive_Recall
+bow,original,DecisionTree,0.6131,0.3945,0.0
+bow,original,NaiveBayes,0.5905,0.4056,0.0
+bow,style_b,DecisionTree,0.629,0.4064,0.0
+bow,style_b,NaiveBayes,0.5973,0.4096,0.0
+bow,style_c,DecisionTree,0.6086,0.392,0.0
+bow,style_c,NaiveBayes,0.5995,0.4112,0.0
+glove,original,DecisionTree,0.6199,0.414,0.0
+glove,original,NaiveBayes,0.6176,0.414,0.0
+glove,style_b,DecisionTree,0.6131,0.4091,0.0
+glove,style_b,NaiveBayes,0.6063,0.4064,0.0
+glove,style_c,DecisionTree,0.6041,0.4048,0.0
+glove,style_c,NaiveBayes,0.6086,0.4079,0.0
