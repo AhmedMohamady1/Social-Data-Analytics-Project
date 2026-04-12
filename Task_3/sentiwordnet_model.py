@@ -102,7 +102,7 @@ def sentiwordnet_sentiment(text):
 # ==============================
 # Apply on ALL datasets
 # ==============================
-folder_path = "../preprocessing_temp"
+folder_path = "Task_3/preprocessing_temp"
 
 for file_name in os.listdir(folder_path):
 
@@ -138,7 +138,7 @@ for file_name in os.listdir(folder_path):
     df["swn_sentiment"] = df[text_col].apply(sentiwordnet_sentiment)
 
     # Save results (ONE FILE PER DATASET)
-    output_name = f"swn_{file_name}"
+    output_name = f"Task_3/swn_{file_name}"
     df.to_csv(output_name, index=False)
     print(f"Saved: {output_name}")
 
