@@ -11,7 +11,7 @@ import numpy as np
 from pathlib import Path
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.model_selection import StratifiedKFold, cross_validate
+from sklearn.model_selection import train_test_split, StratifiedKFold, cross_validate
 from sklearn.metrics import classification_report, confusion_matrix
 from imblearn.over_sampling import RandomOverSampler
 
@@ -25,6 +25,7 @@ MODEL_DIR.mkdir(parents=True, exist_ok=True)
 VECTORIZER_PATH = MODEL_DIR / "tfidf_vectorizer.joblib"
 MODEL_PATH = MODEL_DIR / "sentiment_model.joblib"
 LABEL_ENCODER_PATH = MODEL_DIR / "label_classes.joblib"
+TEST_INDICES_PATH = MODEL_DIR / "test_indices.joblib"
 
 
 def main():
@@ -35,33 +36,46 @@ def main():
     df["final_text"] = df["final_text"].astype(str).str.strip()
     df["ground_truth"] = df["ground_truth"].astype(str).str.strip().str.lower()
     df = df[df["final_text"] != ""]
+    df = df.reset_index(drop=True)
 
     X_text = df["final_text"].to_numpy(dtype=str)
     y = df["ground_truth"].to_numpy(dtype=str)
     classes = np.array(sorted(set(y)))
 
-    print(f"  Samples : {len(df)}")
-    print(f"  Classes : {dict(zip(*np.unique(y, return_counts=True)))}")
+    print(f"  Total samples : {len(df)}")
+    print(f"  Classes       : {dict(zip(*np.unique(y, return_counts=True)))}")
 
-    # ── 2. TF-IDF vectorisation ──────────────────────────────
-    print("Fitting TF-IDF vectorizer (unigrams + bigrams)...")
+    # ── 2. Train / Test split (80/20) ────────────────────────
+    print("\nSplitting data 80/20...")
+    X_text_train, X_text_test, y_train, y_test, idx_train, idx_test = train_test_split(
+        X_text, y, np.arange(len(df)),
+        test_size=0.2,
+        stratify=y,
+        random_state=42,
+    )
+    print(f"  Train : {len(X_text_train)}  |  Test : {len(X_text_test)}")
+
+    # ── 3. TF-IDF vectorisation (fit on train only) ──────────
+    print("Fitting TF-IDF vectorizer on training data (unigrams + bigrams)...")
     vectorizer = TfidfVectorizer(
         max_features=5000,
         ngram_range=(1, 2),
         sublinear_tf=True,
         min_df=2,
     )
-    X = vectorizer.fit_transform(X_text)
-    print(f"  Feature matrix: {X.shape}")
+    X_train = vectorizer.fit_transform(X_text_train)
+    X_test = vectorizer.transform(X_text_test)
+    print(f"  Train feature matrix : {X_train.shape}")
+    print(f"  Test feature matrix  : {X_test.shape}")
 
-    # ── 3. Handle class imbalance via oversampling ───────────
-    print("Oversampling minority classes...")
+    # ── 4. Handle class imbalance via oversampling (train only)
+    print("Oversampling minority classes (training set only)...")
     ros = RandomOverSampler(random_state=42)
-    X_res, y_res = ros.fit_resample(X, y)
-    print(f"  After oversampling: {dict(zip(*np.unique(y_res, return_counts=True)))}")
+    X_train_res, y_train_res = ros.fit_resample(X_train, y_train)
+    print(f"  After oversampling: {dict(zip(*np.unique(y_train_res, return_counts=True)))}")
 
-    # ── 4. Train Random Forest ───────────────────────────────
-    print("Training Random Forest...")
+    # ── 5. Train Random Forest ───────────────────────────────
+    print("\nTraining Random Forest...")
     model = RandomForestClassifier(
         n_estimators=200,
         max_depth=None,
@@ -69,35 +83,37 @@ def main():
         random_state=42,
         n_jobs=-1,
     )
-    model.fit(X_res, y_res)
+    model.fit(X_train_res, y_train_res)
 
-    # ── 5. Evaluate via Stratified K-Fold on original data ───
-    print("\nStratified 5-Fold Cross-Validation on original (unsampled) data:")
+    # ── 6. Evaluate on held-out test set ─────────────────────
+    y_test_pred = model.predict(X_test)
+    print("\n═══ Test Set Evaluation (20% held-out) ═══")
+    print(classification_report(y_test, y_test_pred, digits=4))
+    print("Confusion Matrix:")
+    print(confusion_matrix(y_test, y_test_pred, labels=classes))
+
+    # ── 7. Cross-validation on training data ─────────────────
+    print("\nStratified 5-Fold Cross-Validation on training data:")
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     cv_results = cross_validate(
-        model, X, y, cv=cv,
+        model, X_train, y_train, cv=cv,
         scoring=["accuracy", "f1_macro"],
         return_train_score=False,
     )
     print(f"  Accuracy : {cv_results['test_accuracy'].mean():.4f} ± {cv_results['test_accuracy'].std():.4f}")
     print(f"  F1 Macro : {cv_results['test_f1_macro'].mean():.4f} ± {cv_results['test_f1_macro'].std():.4f}")
 
-    # Full-data classification report (for reference)
-    y_pred = model.predict(X)
-    print("\nFull-data Classification Report:")
-    print(classification_report(y, y_pred, digits=4))
-    print("Confusion Matrix:")
-    print(confusion_matrix(y, y_pred, labels=classes))
-
-    # ── 6. Save artifacts ────────────────────────────────────
+    # ── 8. Save artifacts ────────────────────────────────────
     joblib.dump(vectorizer, VECTORIZER_PATH)
     joblib.dump(model, MODEL_PATH)
     joblib.dump(classes, LABEL_ENCODER_PATH)
+    joblib.dump(idx_test, TEST_INDICES_PATH)
 
     print(f"\nArtifacts saved to {MODEL_DIR}/")
-    print(f"  Vectorizer  : {VECTORIZER_PATH.name}")
-    print(f"  Model       : {MODEL_PATH.name}")
-    print(f"  Label classes: {LABEL_ENCODER_PATH.name}")
+    print(f"  Vectorizer    : {VECTORIZER_PATH.name}")
+    print(f"  Model         : {MODEL_PATH.name}")
+    print(f"  Label classes : {LABEL_ENCODER_PATH.name}")
+    print(f"  Test indices  : {TEST_INDICES_PATH.name}")
     print("\nDone!")
 
 
