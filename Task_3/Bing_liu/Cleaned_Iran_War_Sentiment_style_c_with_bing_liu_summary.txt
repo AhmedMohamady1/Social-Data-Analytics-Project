@@ -4,28 +4,28 @@ SENTIMENT ANALYSIS SUMMARY
 
 Sentiment Distribution:
 ------------------------------------------------------------
-negative: 255 (57.69%)
-positive: 98 (22.17%)
-neutral: 89 (20.14%)
+negative: 273 (54.60%)
+neutral: 122 (24.40%)
+positive: 105 (21.00%)
 
 Sentiment Scores:
 ------------------------------------------------------------
-Average score: -0.2500
+Average score: -0.2446
 Min score: -1.0000
 Max score: 1.0000
-Std dev: 0.6670
+Std dev: 0.6610
 
 Confidence Scores:
 ------------------------------------------------------------
-Average confidence: 0.6843
+Average confidence: 0.6553
 Min confidence: 0.0000
 Max confidence: 1.0000
 
 Accuracy Comparison with Ground Truth:
 ------------------------------------------------------------
-Overall Accuracy: 0.4299 (190/442)
+Overall Accuracy: 0.4480 (224/500)
 Positive Accuracy: 0.8000
-Negative Accuracy: 0.6895
-Neutral Accuracy: 0.2227
+Negative Accuracy: 0.6872
+Neutral Accuracy: 0.2867
 
 ============================================================

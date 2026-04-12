@@ -1,1 +1,4 @@
 .venv/
+.env
+Task_3/text_representation_outputs/
+Task_3/preprocessing_temp/

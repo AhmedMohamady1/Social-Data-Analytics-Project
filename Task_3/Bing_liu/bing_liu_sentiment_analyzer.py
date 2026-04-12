@@ -460,12 +460,11 @@ def process_all_files(base_path: str, preprocessing_temp_path: str,
 
 if __name__ == '__main__':
     # Configuration
-    BASE_PATH = '/home/el3omda/projects/personal/SDA'
-    PREPROCESSING_TEMP_PATH = os.path.join(
-        BASE_PATH, 'Social-Data-Analytics-Project/Task_3/preprocessing_temp'
-    )
-    POSITIVE_DICT_PATH = os.path.join(BASE_PATH, 'positive-words.txt')
-    NEGATIVE_DICT_PATH = os.path.join(BASE_PATH, 'negative-words.txt')
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    BASE_PATH = os.path.dirname(SCRIPT_DIR)  # For process_all_files if needed
+    PREPROCESSING_TEMP_PATH = os.path.join(BASE_PATH, 'preprocessing_temp')
+    POSITIVE_DICT_PATH = os.path.join(SCRIPT_DIR, 'positive-words.txt')
+    NEGATIVE_DICT_PATH = os.path.join(SCRIPT_DIR, 'negative-words.txt')
     
     # Verify paths exist
     if not os.path.exists(PREPROCESSING_TEMP_PATH):

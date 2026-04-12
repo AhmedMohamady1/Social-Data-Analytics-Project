@@ -106,7 +106,7 @@ def sentiwordnet_sentiment(text):
 
 
 # Apply on Dataset
-df = pd.read_csv("Cleaned_Iran_War_Sentiment_with_Sentiment_Labels.csv")
+df = pd.read_csv("Task_3/Cleaned_Iran_War_Sentiment_with_Sentiment_Labels.csv")
 
 # Clean data
 df = df.dropna(subset=["final_text"])
@@ -116,7 +116,7 @@ df["final_text"] = df["final_text"].astype(str)
 df["swn_sentiment"] = df["final_text"].apply(sentiwordnet_sentiment)
 
 # Save results
-df.to_csv("swn_output.csv", index=False)
+df.to_csv("Task_3/swn_output.csv", index=False)
 
 print("Sentiment prediction completed!")
 

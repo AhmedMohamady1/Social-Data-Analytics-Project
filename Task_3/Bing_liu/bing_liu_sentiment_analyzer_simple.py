@@ -384,12 +384,12 @@ def process_file(input_path, output_path, text_column, analyzer, sentiment_name=
 
 
 if __name__ == '__main__':
-    # Setup paths
-    BASE_PATH = '/home/el3omda/projects/personal/SDA'
-    TEMP_PATH = os.path.join(BASE_PATH, 'Social-Data-Analytics-Project/Task_3/preprocessing_temp')
-    OUTPUT_PATH = os.path.join(BASE_PATH, 'Social-Data-Analytics-Project/Task_3/Bing_liu')
-    POS_FILE = os.path.join(BASE_PATH, 'Social-Data-Analytics-Project/Task_3/Bing_liu/positive-words.txt')
-    NEG_FILE = os.path.join(BASE_PATH, 'Social-Data-Analytics-Project/Task_3/Bing_liu/negative-words.txt')
+    # Setup paths relative to the current script
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    OUTPUT_PATH = SCRIPT_DIR
+    TEMP_PATH = os.path.join(os.path.dirname(SCRIPT_DIR), 'preprocessing_temp')
+    POS_FILE = os.path.join(SCRIPT_DIR, 'positive-words.txt')
+    NEG_FILE = os.path.join(SCRIPT_DIR, 'negative-words.txt')
     
     # Check all paths exist
     if not os.path.exists(TEMP_PATH):
@@ -432,7 +432,7 @@ if __name__ == '__main__':
     
     # Run
     print_info("Starting sentiment analysis")
-    print_info(f"Base path: {BASE_PATH}")
+    print_info(f"Script logic path: {SCRIPT_DIR}")
     print_info(f"Temp path: {TEMP_PATH}")
     print_info(f"Output path: {OUTPUT_PATH}")
     
