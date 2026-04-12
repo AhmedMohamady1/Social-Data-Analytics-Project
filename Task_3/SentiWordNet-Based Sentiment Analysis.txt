@@ -1,0 +1,167 @@
+### SentiWordNet-Based Sentiment Analysis
+
+#### 1. Introduction
+
+This section presents the implementation and evaluation of a lexical-based sentiment analysis model using SentiWordNet. The objective of this model is to classify text data into three sentiment categories: **Positive**, **Negative**, and **Neutral**, without relying on training data.
+
+To further analyze the effect of preprocessing, the model was evaluated on **three different preprocessing variants** of the dataset:
+
+* Original text
+* Style B preprocessing
+* Style C preprocessing
+
+---
+
+#### 2. Methodology
+
+The SentiWordNet model processes each input text through several steps:
+
+##### 2.1 Text Preprocessing
+
+* The input text is converted to lowercase.
+* Tokenization is applied to split text into individual words.
+* Part-of-Speech (POS) tagging is performed to determine the grammatical role of each word.
+
+---
+
+##### 2.2 Word-Level Sentiment Scoring
+
+Each word is mapped to its corresponding synsets in WordNet.
+For each synset, SentiWordNet provides:
+
+* Positive score
+* Negative score
+
+The model computes the **average sentiment score across all synsets**, improving robustness and reducing ambiguity.
+
+---
+
+##### 2.3 Negation Handling
+
+Negation handling is implemented using a window of three words.
+When a negation word (e.g., *not, no, never*) is detected, the polarity of the following words is reversed.
+
+---
+
+##### 2.4 Sentence-Level Sentiment Calculation
+
+Final Score = (Sum of Positive Scores − Sum of Negative Scores) / Number of Words
+
+---
+
+##### 2.5 Classification Rule
+
+* Score > 0.05 → Positive
+* Score < -0.05 → Negative
+* Otherwise → Neutral
+
+---
+
+#### 3. Evaluation Results
+
+The model was evaluated on three preprocessing variants. The results are summarized below:
+
+##### 3.1 Accuracy Comparison
+
+| Preprocessing Style | Accuracy   |
+| ------------------- | ---------- |
+| Style B             | 0.5204     |
+| Original            | 0.5181     |
+| Style C             | **0.5271** |
+
+**Observation:**
+Style C achieved the highest accuracy, although differences between preprocessing methods are relatively small.
+
+---
+
+##### 3.2 Classification Performance (General Pattern)
+
+Across all three datasets, the model shows consistent behavior:
+
+| Class    | Precision | Recall | F1-score |
+| -------- | --------- | ------ | -------- |
+| Negative | ~0.56     | ~0.11  | ~0.19    |
+| Neutral  | ~0.56     | ~0.84  | ~0.67    |
+| Positive | ~0.06     | ~0.40  | ~0.10    |
+
+---
+
+##### 3.3 Confusion Matrix Analysis (Style C Example)
+
+| Actual \ Predicted | Negative | Neutral | Positive |
+| ------------------ | -------- | ------- | -------- |
+| Negative           | 22       | 159     | 9        |
+| Neutral            | 17       | 209     | 21       |
+| Positive           | 0        | 3       | 2        |
+
+---
+
+#### 4. Effect of Preprocessing
+
+The results show that preprocessing has a **limited but noticeable impact**:
+
+* Style C slightly improves performance, especially in detecting neutral sentiment.
+* All preprocessing styles produce **very similar results**, indicating that:
+
+  * Lexical models are **less sensitive to preprocessing changes**
+  * Performance is mainly limited by the sentiment lexicon itself
+
+---
+
+#### 5. Analysis of Results
+
+The results reveal several important insights:
+
+* The model performs best on the **Neutral class**, achieving high recall (~0.84).
+* The **Negative class** has very low recall (~0.11), meaning most negative samples are misclassified as neutral.
+* The **Positive class** has unstable performance due to having only **5 samples**.
+
+A key observation is that the model is **strongly biased toward Neutral predictions**, as seen in all confusion matrices.
+
+---
+
+#### 6. Discussion
+
+Several factors explain the observed behavior:
+
+* **Class Imbalance:**
+  The dataset is highly imbalanced, especially for the positive class.
+
+* **Lexical Limitations:**
+  SentiWordNet assigns scores at the word level and cannot fully capture context.
+
+* **Domain-Specific Language:**
+  War-related and political vocabulary is not well represented in general sentiment lexicons.
+
+* **Limited Impact of Preprocessing:**
+  Unlike machine learning models, lexical models do not significantly benefit from advanced preprocessing.
+
+---
+
+#### 7. Improvements Applied
+
+The following improvements were implemented:
+
+* Averaging sentiment scores across synsets
+* Negation handling with a context window
+* Threshold tuning
+* Evaluation across multiple preprocessing styles
+
+These improvements increased accuracy from approximately **36% to ~52–53%**.
+
+---
+
+#### 8. Limitations
+
+* Lack of contextual understanding
+* Sensitivity to ambiguous word meanings
+* Poor performance on minority classes
+* Limited adaptability to domain-specific text
+
+---
+
+#### 9. Conclusion
+
+The SentiWordNet-based model provides a simple and interpretable baseline for sentiment analysis. While it achieves moderate accuracy (~52–53%), it struggles with class imbalance and contextual understanding.
+
+The evaluation across three preprocessing variants shows that **preprocessing alone cannot significantly improve lexical model performance**, highlighting the importance of machine learning approaches for more accurate sentiment classification.
