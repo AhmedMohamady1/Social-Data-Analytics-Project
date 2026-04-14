@@ -1,0 +1,51 @@
+created_at,username,sentiment_text,url,subject_tag,stance_category,final_text,label_gpt4o_mini,label_gemini_flash,label_claude_haiku,ground_truth
+2026-03-07T10:01:00Z,user1,"Peace talks about Iran show real progress and hope for stability",https://example.com/1,Diplomacy,Neutral,peace talks iran show real progress hope stability,positive,positive,positive,positive
+2026-03-07T10:02:00Z,user2,"Global leaders praise ceasefire efforts in the Middle East",https://example.com/2,Peace,Neutral,global leaders praise ceasefire efforts middle east,positive,positive,positive,positive
+2026-03-07T10:03:00Z,user3,"Iran agreement could reduce tensions and improve global economy",https://example.com/3,Economy,Neutral,iran agreement reduce tensions improve global economy,positive,positive,positive,positive
+2026-03-07T10:04:00Z,user4,"Hopeful signs of cooperation between nations in conflict resolution",https://example.com/4,Diplomacy,Neutral,hopeful signs cooperation nations conflict resolution,positive,positive,positive,positive
+2026-03-07T10:05:00Z,user5,"Humanitarian aid successfully reaches affected regions in Iran",https://example.com/5,Humanitarian,Neutral,humanitarian aid successfully reaches affected regions iran,positive,positive,positive,positive
+2026-03-07T10:06:00Z,user6,"Positive discussions on rebuilding trust between countries",https://example.com/6,Politics,Neutral,positive discussions rebuilding trust between countries,positive,positive,positive,positive
+2026-03-07T10:07:00Z,user7,"Ceasefire extension welcomed by international community",https://example.com/7,Peace,Neutral,ceasefire extension welcomed international community,positive,positive,positive,positive
+2026-03-07T10:08:00Z,user8,"Diplomatic breakthrough reduces fear of escalation",https://example.com/8,Diplomacy,Neutral,diplomatic breakthrough reduces fear escalation,positive,positive,positive,positive
+2026-03-07T10:09:00Z,user9,"Economic recovery expected after peace agreement announcement",https://example.com/9,Economy,Neutral,economic recovery expected peace agreement announcement,positive,positive,positive,positive
+2026-03-07T10:10:00Z,user10,"Leaders agree on cooperation plan for regional stability",https://example.com/10,Politics,Neutral,leaders agree cooperation plan regional stability,positive,positive,positive,positive
+2026-03-07T10:11:00Z,user11,"International organizations celebrate reduced violence levels",https://example.com/11,Peace,Neutral,international organizations celebrate reduced violence levels,positive,positive,positive,positive
+2026-03-07T10:12:00Z,user12,"Iran and partners move toward constructive negotiations",https://example.com/12,Diplomacy,Neutral,iran partners move toward constructive negotiations,positive,positive,positive,positive
+2026-03-07T10:13:00Z,user13,"Hope rises as sanctions discussions turn toward resolution",https://example.com/13,Economy,Neutral,hope rises sanctions discussions turn toward resolution,positive,positive,positive,positive
+2026-03-07T10:14:00Z,user14,"Peace initiatives reduce fears of wider conflict",https://example.com/14,Peace,Neutral,peace initiatives reduce fears wider conflict,positive,positive,positive,positive
+2026-03-07T10:15:00Z,user15,"Countries collaborate on rebuilding infrastructure in Iran",https://example.com/15,Humanitarian,Neutral,countries collaborate rebuilding infrastructure iran,positive,positive,positive,positive
+2026-03-07T10:16:00Z,user16,"Positive market reaction after diplomatic talks",https://example.com/16,Economy,Neutral,positive market reaction diplomatic talks,positive,positive,positive,positive
+2026-03-07T10:17:00Z,user17,"World leaders emphasize peace and mutual understanding",https://example.com/17,Politics,Neutral,world leaders emphasize peace mutual understanding,positive,positive,positive,positive
+2026-03-07T10:18:00Z,user18,"Aid programs expanded to support civilians successfully",https://example.com/18,Humanitarian,Neutral,aid programs expanded support civilians successfully,positive,positive,positive,positive
+2026-03-07T10:19:00Z,user19,"Successful negotiations prevent escalation of tensions",https://example.com/19,Diplomacy,Neutral,successful negotiations prevent escalation tensions,positive,positive,positive,positive
+2026-03-07T10:20:00Z,user20,"Optimism grows after announcement of peace roadmap",https://example.com/20,Peace,Neutral,optimism grows announcement peace roadmap,positive,positive,positive,positive
+2026-03-07T10:21:00Z,user21,"Iran cooperation with international agencies improves stability",https://example.com/21,Politics,Neutral,iran cooperation international agencies improves stability,positive,positive,positive,positive
+2026-03-07T10:22:00Z,user22,"Global support for peaceful resolution increases",https://example.com/22,Peace,Neutral,global support peaceful resolution increases,positive,positive,positive,positive
+2026-03-07T10:23:00Z,user23,"Economic optimism rises after de-escalation talks",https://example.com/23,Economy,Neutral,economic optimism rises de escalation talks,positive,positive,positive,positive
+2026-03-07T10:24:00Z,user24,"Diplomats praise constructive engagement efforts",https://example.com/24,Diplomacy,Neutral,diplomats praise constructive engagement efforts,positive,positive,positive,positive
+2026-03-07T10:25:00Z,user25,"Humanitarian corridors successfully opened",https://example.com/25,Humanitarian,Neutral,humanitarian corridors successfully opened,positive,positive,positive,positive
+2026-03-07T10:26:00Z,user26,"Peace talks bring renewed hope to civilians",https://example.com/26,Peace,Neutral,peace talks bring renewed hope civilians,positive,positive,positive,positive
+2026-03-07T10:27:00Z,user27,"Cooperation between rivals leads to reduced tensions",https://example.com/27,Politics,Neutral,cooperation rivals leads reduced tensions,positive,positive,positive,positive
+2026-03-07T10:28:00Z,user28,"Stability efforts praised by international observers",https://example.com/28,Peace,Neutral,stability efforts praised international observers,positive,positive,positive,positive
+2026-03-07T10:29:00Z,user29,"Iran peace framework welcomed globally",https://example.com/29,Diplomacy,Neutral,iran peace framework welcomed globally,positive,positive,positive,positive
+2026-03-07T10:30:00Z,user30,"Markets respond positively to ceasefire news",https://example.com/30,Economy,Neutral,markets respond positively ceasefire news,positive,positive,positive,positive
+2026-03-07T10:31:00Z,user31,"Aid delivery improves living conditions significantly",https://example.com/31,Humanitarian,Neutral,aid delivery improves living conditions significantly,positive,positive,positive,positive
+2026-03-07T10:32:00Z,user32,"Leaders commit to long-term peace building",https://example.com/32,Politics,Neutral,leaders commit long term peace building,positive,positive,positive,positive
+2026-03-07T10:33:00Z,user33,"Successful dialogue reduces regional uncertainty",https://example.com/33,Diplomacy,Neutral,successful dialogue reduces regional uncertainty,positive,positive,positive,positive
+2026-03-07T10:34:00Z,user34,"Hopeful outlook for post-conflict recovery",https://example.com/34,Peace,Neutral,hopeful outlook post conflict recovery,positive,positive,positive,positive
+2026-03-07T10:35:00Z,user35,"Iran and neighbors agree on peace initiatives",https://example.com/35,Politics,Neutral,iran neighbors agree peace initiatives,positive,positive,positive,positive
+2026-03-07T10:36:00Z,user36,"International peace summit receives praise",https://example.com/36,Peace,Neutral,international peace summit receives praise,positive,positive,positive,positive
+2026-03-07T10:37:00Z,user37,"Reconstruction efforts show promising results",https://example.com/37,Humanitarian,Neutral,reconstruction efforts show promising results,positive,positive,positive,positive
+2026-03-07T10:38:00Z,user38,"Diplomatic channels remain open and productive",https://example.com/38,Diplomacy,Neutral,diplomatic channels remain open productive,positive,positive,positive,positive
+2026-03-07T10:39:00Z,user39,"Peace agreement boosts investor confidence",https://example.com/39,Economy,Neutral,peace agreement boosts investor confidence,positive,positive,positive,positive
+2026-03-07T10:40:00Z,user40,"Humanitarian support expands across regions",https://example.com/40,Humanitarian,Neutral,humanitarian support expands across regions,positive,positive,positive,positive
+2026-03-07T10:41:00Z,user41,"Ceasefire holds successfully for extended period",https://example.com/41,Peace,Neutral,ceasefire holds successfully extended period,positive,positive,positive,positive
+2026-03-07T10:42:00Z,user42,"Global unity strengthens peace negotiations",https://example.com/42,Politics,Neutral,global unity strengthens peace negotiations,positive,positive,positive,positive
+2026-03-07T10:43:00Z,user43,"Iran peace talks described as productive",https://example.com/43,Diplomacy,Neutral,iran peace talks described productive,positive,positive,positive,positive
+2026-03-07T10:44:00Z,user44,"Economic growth expected after stability returns",https://example.com/44,Economy,Neutral,economic growth expected stability returns,positive,positive,positive,positive
+2026-03-07T10:45:00Z,user45,"Aid organizations report successful missions",https://example.com/45,Humanitarian,Neutral,aid organizations report successful missions,positive,positive,positive,positive
+2026-03-07T10:46:00Z,user46,"Peace initiatives praised by UN officials",https://example.com/46,Peace,Neutral,peace initiatives praised un officials,positive,positive,positive,positive
+2026-03-07T10:47:00Z,user47,"Diplomatic optimism spreads across regions",https://example.com/47,Diplomacy,Neutral,diplomatic optimism spreads across regions,positive,positive,positive,positive
+2026-03-07T10:48:00Z,user48,"Stability returns after successful agreements",https://example.com/48,Peace,Neutral,stability returns successful agreements,positive,positive,positive,positive
+2026-03-07T10:49:00Z,user49,"International cooperation praised worldwide",https://example.com/49,Politics,Neutral,international cooperation praised worldwide,positive,positive,positive,positive
+2026-03-07T10:50:00Z,user50,"Peace efforts lead to historic breakthrough",https://example.com/50,Diplomacy,Neutral,peace efforts lead historic breakthrough,positive,positive,positive,positive
