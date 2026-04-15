@@ -1,0 +1,13 @@
+rep,style,model,accuracy,f1_macro
+glove,style_b,DecisionTree,0.55,0.4577799012581621
+glove,style_c,DecisionTree,0.55,0.3692646692966557
+glove,style_c,NaiveBayes,0.55,0.36886840757808503
+glove,style_b,NaiveBayes,0.53,0.3636102121539015
+glove,original,NaiveBayes,0.53,0.35904930925287953
+glove,original,DecisionTree,0.48,0.3164488017429194
+bow,style_b,DecisionTree,0.6,0.30685990338164254
+bow,style_c,DecisionTree,0.59,0.3053442704449416
+bow,style_b,NaiveBayes,0.36,0.2778029046685763
+bow,style_c,NaiveBayes,0.27,0.23588686591091265
+bow,original,NaiveBayes,0.21,0.1982386797032106
+bow,original,DecisionTree,0.06,0.07050960735171262
