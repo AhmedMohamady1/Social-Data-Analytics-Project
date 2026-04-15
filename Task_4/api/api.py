@@ -9,31 +9,44 @@ GET  /info      → model metadata
 """
 
 import os
+import sys
 import joblib
 import numpy as np
 from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
+import sys
+
+# Support running app via uvicorn from the root path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from src.features.style_c_glove_transform import text_to_style_c_glove_feature_row
+from src.config import MODELS_DIR
+
 # ── Paths ────────────────────────────────────────────────────
-SCRIPT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
-ARTIFACT_DIR = SCRIPT_DIR / "artifacts"
-VECTORIZER_PATH = ARTIFACT_DIR / "tfidf_vectorizer.joblib"
-MODEL_PATH = ARTIFACT_DIR / "sentiment_model.joblib"
-LABEL_CLASSES_PATH = ARTIFACT_DIR / "label_classes.joblib"
+MODEL_PATH = MODELS_DIR / "random_forest_glove_style_c_p50.pkl"
 
 # ── Load model artifacts at startup ──────────────────────────
 def _load_artifacts():
     if not MODEL_PATH.exists():
         raise FileNotFoundError(
-            f"Model not found at {MODEL_PATH}. Run train_model.py first."
+            f"Model not found at {MODEL_PATH}."
         )
-    vectorizer = joblib.load(VECTORIZER_PATH)
-    model = joblib.load(MODEL_PATH)
-    classes = joblib.load(LABEL_CLASSES_PATH)
-    return vectorizer, model, classes
+    model_obj = joblib.load(MODEL_PATH)
+    
+    if isinstance(model_obj, dict) and "model" in model_obj:
+        model = model_obj["model"]
+    else:
+        # The saved .pkl might actually be just the LabelEncoder due to a bug in earlier iterations
+        model = model_obj if not hasattr(model_obj, "classes_") else None
+    
+    # Classes are sorted alphabetically by scikit-learn LabelEncoder
+    classes = ["negative", "neutral", "positive"]
+    
+    return model, classes
 
-vectorizer, model, classes = _load_artifacts()
+model, classes = _load_artifacts()
 
 # ── FastAPI app ──────────────────────────────────────────────
 app = FastAPI(
@@ -42,7 +55,27 @@ app = FastAPI(
     version="1.0.0",
 )
 
+import threading
 
+is_warming_up = True
+
+@app.on_event("startup")
+def warmup_models():
+    """Run a dummy prediction in the background so the server doesn't block."""
+    def warmup_task():
+        global is_warming_up
+        print("Warming up NLP caching...")
+        try:
+            # Use a full English sentence so langdetect doesn't drop it
+            text_to_style_c_glove_feature_row("This is a proper English sentence to warm up the NLP models quickly and safely.", python_executable=sys.executable)
+            print("Warmup complete!")
+        except Exception as e:
+            print(f"Warmup failed: {e}")
+        finally:
+            is_warming_up = False
+
+    t = threading.Thread(target=warmup_task)
+    t.start()
 # ── Schemas ──────────────────────────────────────────────────
 class PredictRequest(BaseModel):
     text: str = Field(..., min_length=1, examples=["I love this product"])
@@ -73,8 +106,15 @@ def predict(request: PredictRequest):
         if not text:
             raise HTTPException(status_code=400, detail="Text cannot be empty.")
 
-        X = vectorizer.transform([text])
-        proba = model.predict_proba(X)[0]
+        try:
+            processed_text, feature_row, info_meta = text_to_style_c_glove_feature_row(text, python_executable=sys.executable)
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Preprocessing failed: {e}")
+
+        if model is None:
+            raise HTTPException(status_code=500, detail="The loaded model is actually a LabelEncoder. Please fix the saving logic in Random_Forest.py.")
+
+        proba = model.predict_proba(feature_row)[0]
         predicted_idx = int(np.argmax(proba))
         predicted_label = classes[predicted_idx]
         confidence = float(round(proba[predicted_idx], 4))
@@ -100,11 +140,17 @@ def health():
     return HealthResponse(status="ok")
 
 
+@app.get("/status")
+def status():
+    """Detailed status indicating if background warmup is finished."""
+    return {"status": "warming_up" if is_warming_up else "ready"}
+
+
 @app.get("/info", response_model=InfoResponse)
 def info():
     """Return model metadata."""
     return InfoResponse(
         model_type=type(model).__name__,
         classes=[str(c) for c in classes],
-        vectorizer_features=len(vectorizer.get_feature_names_out()),
+        vectorizer_features=model.n_features_in_ if hasattr(model, "n_features_in_") else 0,
     )

@@ -16,8 +16,12 @@ warnings.filterwarnings("ignore")
 # ==========================================
 # 1. Paths & Configuration
 # ==========================================
-FEATURES_DIR = "Task_4_v2/split_style_bow_glove_outputs/three_style_features"
-SAVE_DIR = "Task_4_ML/Task_4_ML_Production"
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+from src.config import DATA_DIR, MODELS_DIR
+
+FEATURES_DIR = DATA_DIR / "split_style_bow_glove_outputs/three_style_features"
+SAVE_DIR = MODELS_DIR
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 DATASETS = {

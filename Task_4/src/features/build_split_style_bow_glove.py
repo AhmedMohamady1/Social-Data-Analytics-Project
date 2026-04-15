@@ -13,6 +13,10 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.model_selection import train_test_split
 
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+from src.config import TASK_3_ROOT, CLEANING_SCRIPT_PATH, DATA_DIR, PROJECT_ROOT
+
 
 BOW_NGRAM_RANGE = (1, 2)
 TFIDF_NGRAM_RANGE = (1, 2)
@@ -382,22 +386,22 @@ def main() -> None:
     parser.add_argument(
         "--input_csv",
         type=Path,
-        default=Path("Task_3") / "Cleaned_Iran_War_Sentiment_with_Sentiment_Labels.csv",
+        default=TASK_3_ROOT / "Cleaned_Iran_War_Sentiment_with_Sentiment_Labels.csv",
     )
     parser.add_argument(
         "--cleaning_script",
         type=Path,
-        default=Path("Task_3") / "cleaning_pipeline.py",
+        default=CLEANING_SCRIPT_PATH,
     )
     parser.add_argument(
         "--output_root",
         type=Path,
-        default=Path("Task_4_v2") / "split_style_bow_glove_outputs",
+        default=DATA_DIR / "split_style_bow_glove_outputs",
     )
     parser.add_argument(
         "--positive_train_csv",
         type=Path,
-        default=Path("Task_4_v2") / "pipelines" / "positive.csv",
+        default=DATA_DIR / "positive.csv",
         help="CSV file to append to the train split only after splitting.",
     )
     parser.add_argument("--test_size", type=float, default=0.2)

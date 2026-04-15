@@ -119,13 +119,17 @@ SENTIMENT_EMOJI = {"positive": "😊", "negative": "😠", "neutral": "😐"}
 SENTIMENT_COLOR = {"positive": "#10b981", "negative": "#ef4444", "neutral": "#f59e0b"}
 
 
-def check_api_health() -> bool:
-    """Return True if the FastAPI backend is reachable."""
+def check_api_status() -> str:
+    """Return the detailed status of the FastAPI backend ('warming_up', 'ready', or 'offline')."""
     try:
-        r = requests.get(f"{API_URL}/health", timeout=3)
-        return r.status_code == 200
+        r = requests.get(f"{API_URL}/status", timeout=3)
+        if r.status_code == 200:
+            return r.json().get("status", "ready")
+        return "offline"
     except requests.ConnectionError:
-        return False
+        return "offline"
+    except Exception:
+        return "offline"
 
 
 def predict_sentiment(text: str) -> dict | None:
@@ -134,7 +138,7 @@ def predict_sentiment(text: str) -> dict | None:
         r = requests.post(
             f"{API_URL}/predict",
             json={"text": text},
-            timeout=10,
+            timeout=60,
         )
         r.raise_for_status()
         return r.json()
@@ -168,13 +172,23 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # API status indicator
-api_ok = check_api_health()
-if api_ok:
-    st.success("✅ API is online", icon="🟢")
+api_status = check_api_status()
+api_ok = (api_status == "ready")
+
+if api_status == "warming_up":
+    st.info("⏳ The API is currently warming up and loading the NLP dictionary. This typically takes ~15 seconds. Please wait...")
+    with st.spinner("Waiting for NLP Caching to finish..."):
+        while api_status == "warming_up":
+            time.sleep(1.5)
+            api_status = check_api_status()
+        st.rerun()  # Refresh the page once it finishes loading!
+
+elif api_status == "ready":
+    st.success("✅ API is online and ready", icon="🟢")
 else:
     st.error(
         "❌ Cannot reach the FastAPI backend.  \n"
-        "Start it with: `uvicorn api:app --reload` from the Task_4 folder."
+        "Start it with: `uvicorn api.api:app --reload` from the Task_4 folder."
     )
 
 st.divider()
@@ -199,9 +213,9 @@ with col2:
 st.markdown("**Quick examples:**")
 ex_cols = st.columns(3)
 examples = [
-    ("😊 Positive", "This is great news, peace is finally possible and people are hopeful!"),
+    ("😊 Positive", "The recent peace talks have concluded successfully, bringing a tremendous amount of hope for stability in the region."),
     ("😠 Negative", "War is terrible, thousands of innocent civilians are suffering and dying."),
-    ("😐 Neutral",  "The United Nations held a meeting today regarding the ongoing situation."),
+    ("😐 Neutral",  "The embassy released a brief statement outlining the timeline of last night's events.."),
 ]
 for col, (label, ex_text) in zip(ex_cols, examples):
     if col.button(label, use_container_width=True):
@@ -216,7 +230,6 @@ if analyze_btn and text_input.strip():
         st.error("API is offline. Start the FastAPI server first.")
     else:
         with st.spinner("Analyzing..."):
-            time.sleep(0.3)  # small delay for UX feel
             result = predict_sentiment(text_input.strip())
 
         if result:
@@ -246,6 +259,6 @@ elif analyze_btn and not text_input.strip():
 st.markdown("""
 <div class="footer">
     Social Data Analytics Project — Task 4: Model Deployment<br>
-    FastAPI + Streamlit + Random Forest (TF-IDF)
+    FastAPI + Streamlit + Random Forest (GloVe Style B)
 </div>
 """, unsafe_allow_html=True)

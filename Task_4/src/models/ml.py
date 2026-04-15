@@ -21,7 +21,7 @@ from imblearn.over_sampling import RandomOverSampler, BorderlineSMOTE
 warnings.filterwarnings("ignore")
 plt.switch_backend('Agg')
 
-OUTPUT_DIR = Path("Machine_Learning_Outputs")
+OUTPUT_DIR = Path("Outputs")
 PLOT_DIR = OUTPUT_DIR / "EDA_Visuals"
 REPORT_DIR = OUTPUT_DIR / "Results"
 

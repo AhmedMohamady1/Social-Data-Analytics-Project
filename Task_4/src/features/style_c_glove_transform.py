@@ -11,94 +11,53 @@ import numpy as np
 import pandas as pd
 from gensim import downloader as api
 
-SCRIPT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
-PROJECT_ROOT = SCRIPT_DIR.parent
-CLEANING_SCRIPT_PATH = PROJECT_ROOT / "Task_3" / "cleaning_pipeline.py"
+from src.config import TASK_3_ROOT, GLOVE_MODEL_NAME
 
-GLOVE_MODEL_NAME = "glove-wiki-gigaword-100"
-
-STYLE_C_COMMON_ARGS = ["--lang_mode", "drop", "--limit", "500"]
-STYLE_C_PROFILE_ARGS = [
-    "--convert_emojis",
-    "--remove_mastodon_artifacts",
-    "--remove_urls",
-    "--remove_html_tags",
-    "--remove_social_tags",
-    "--remove_numbers",
-    "--remove_punctuation",
-    "--normalize_whitespace",
-    "--remove_stopwords",
-    "--fix_spelling",
-    "--lemmatize",
-    "--extract_tags",
-]
-
+@lru_cache(maxsize=1)
+def __get_preprocessing_pipeline():
+    # Insert path to Task_3 into sys.path to import cleaning_pipeline
+    if str(TASK_3_ROOT) not in sys.path:
+        sys.path.append(str(TASK_3_ROOT))
+    
+    from cleaning_pipeline import PreprocessingPipeline
+    return PreprocessingPipeline()
 
 def convert_text_to_style_c(text: str, *, python_executable: str | None = None) -> str:
-    """Apply the exact style_c cleaning pipeline to one text string."""
+    """Apply the exact style_c cleaning pipeline to one text string IN MEMORY."""
     raw_text = "" if text is None else str(text).strip()
     if not raw_text:
         raise ValueError("Input text is empty.")
 
-    if not CLEANING_SCRIPT_PATH.exists():
-        raise FileNotFoundError(f"Missing cleaning pipeline script: {CLEANING_SCRIPT_PATH}")
+    from langdetect import detect
+    try:
+        if detect(raw_text) != 'en':
+            raise ValueError("The text was dropped by style_c preprocessing. This usually happens for non-English text when lang_mode=drop.")
+    except Exception as e:
+        if "No features in text" in str(e) or "dropped by style_c" in str(e):
+            raise ValueError("The text was dropped by style_c preprocessing. This usually happens for non-English text when lang_mode=drop.")
 
-    with tempfile.TemporaryDirectory(prefix="style_c_eval_") as temp_dir:
-        temp_path = Path(temp_dir)
-        input_csv = temp_path / "single_input.csv"
-        output_csv = temp_path / "single_output.csv"
+    pipeline = __get_preprocessing_pipeline()
 
-        pd.DataFrame(
-            {
-                "row_id": [0],
-                "sentiment_text": [raw_text],
-                "ground_truth": ["unknown"],
-            }
-        ).to_csv(input_csv, index=False)
+    processed = raw_text
+    processed = pipeline.convert_emojis(processed)
+    processed = pipeline.remove_mastodon_artifacts(processed)
+    processed = pipeline.remove_urls(processed)
+    processed = pipeline.remove_html_tags(processed)
+    processed = pipeline.remove_social_tags(processed)
+    processed = pipeline.remove_numbers(processed)
+    processed = pipeline.remove_punctuation(processed)
+    processed = pipeline.normalize_whitespace(processed)
 
-        cmd = [
-            python_executable or sys.executable,
-            str(CLEANING_SCRIPT_PATH),
-            "--input",
-            str(input_csv),
-            "--output",
-            str(output_csv),
-            *STYLE_C_COMMON_ARGS,
-            *STYLE_C_PROFILE_ARGS,
-        ]
+    processed = str(processed).lower()
 
-        run = subprocess.run(cmd, capture_output=True, text=True)
-        if run.returncode != 0:
-            raise RuntimeError(
-                "style_c preprocessing failed.\n"
-                f"Command: {' '.join(cmd)}\n"
-                f"Stdout: {run.stdout}\n"
-                f"Stderr: {run.stderr}"
-            )
-
-        if not output_csv.exists():
-            raise RuntimeError("style_c preprocessing completed but did not produce output CSV.")
-
-        df_out = pd.read_csv(output_csv)
-        if df_out.empty:
-            raise ValueError(
-                "The text was dropped by style_c preprocessing. "
-                "This usually happens for non-English text when lang_mode=drop."
-            )
-
-        output_col_candidates = ["final_text_style_c", "final_text", "sentiment_text"]
-        output_col = next((col for col in output_col_candidates if col in df_out.columns), None)
-        if output_col is None:
-            raise ValueError(
-                "No processed text column found in preprocessing output. "
-                f"Expected one of {output_col_candidates}."
-            )
-
-        processed_text = str(df_out.iloc[0][output_col]).strip()
-        if not processed_text:
-            raise ValueError("style_c preprocessing returned empty text.")
-
-        return processed_text
+    processed = pipeline.fix_spelling(processed)
+    processed = pipeline.remove_stopwords(processed)
+    processed = pipeline.lemmatize_text(processed)
+    
+    if not processed.strip():
+        raise ValueError("style_c preprocessing returned empty text.")
+    
+    return processed.strip()
 
 
 @lru_cache(maxsize=2)
