@@ -201,6 +201,7 @@ def main():
     parser.add_argument("--lemmatize", action="store_true")
     parser.add_argument("--extract_tags", action="store_true")
     parser.add_argument("--gemini_stance", type=str)
+    parser.add_argument("--no_lowercase", action="store_true", help="Disable lowercasing (enabled by default)")
 
     args = parser.parse_args()
     pipeline = PreprocessingPipeline()
@@ -233,7 +234,8 @@ def main():
     if args.normalize_whitespace:
         processed = processed.apply(pipeline.normalize_whitespace)
 
-    processed = processed.apply(lambda x: str(x).lower())
+    if not args.no_lowercase:
+        processed = processed.apply(lambda x: str(x).lower())
 
     if args.fix_spelling:
         processed = processed.apply(pipeline.fix_spelling)

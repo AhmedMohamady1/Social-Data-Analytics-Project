@@ -2,9 +2,12 @@
 .env
 Task_3/text_representation_outputs/
 Task_3/preprocessing_temp/
-Task_4/commands.txt
 Task_4_v2/split_style_bow_glove_outputs/preprocessing_temp/*
 Task_4_v2/split_style_bow_glove_outputs/three_style_features/*
 Task_4_v2/split_style_bow_glove_outputs/split_dataset_manifest.json
 .gitignore
 .DS_Store
+Task_4/__pycache__
+Task_4/src/__pycache__
+Task_4/src/features/__pycache__
+Task_4/api/__pycache__
