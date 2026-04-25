@@ -43,6 +43,17 @@ gradio==6.12.0
 tqdm==4.67.3
 joblib==1.5.3
 requests==2.33.1
+python-dotenv==1.0.1
+
+# ── Deep Learning & SOTA ──
+torch==2.6.0
+transformers==4.49.0
+
+# ── Document Generation ──
+python-docx==1.1.0
+
+# ── Web Frameworks / UI ──
+pydantic==2.10.6
 
 # ── Jupyter ──
 ipykernel==7.2.0
