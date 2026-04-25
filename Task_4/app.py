@@ -259,6 +259,6 @@ elif analyze_btn and not text_input.strip():
 st.markdown("""
 <div class="footer">
     Social Data Analytics Project — Task 4: Model Deployment<br>
-    FastAPI + Streamlit + Random Forest (GloVe Style B)
+    FastAPI + Streamlit + Random Forest (GloVe Style C)
 </div>
 """, unsafe_allow_html=True)

@@ -13,3 +13,7 @@ Task_5/implementation_plan.md
 Task_2/__pycache__
 Task_5/models/
 Task_5/__pycache__
+Task_5/reports/*.docx
+Task_5/reports/*.md
+Task_5/reports/*.png
+Task_5/reports/md_to_docx.py
