@@ -215,7 +215,7 @@ ex_cols = st.columns(3)
 examples = [
     ("😊 Positive", "The recent peace talks have concluded successfully, bringing a tremendous amount of hope for stability in the region."),
     ("😠 Negative", "War is terrible, thousands of innocent civilians are suffering and dying."),
-    ("😐 Neutral",  "The embassy released a brief statement outlining the timeline of last night's events.."),
+    ("😐 Neutral",  "The embassy released a brief statement outlining the timeline of last night's events."),
 ]
 for col, (label, ex_text) in zip(ex_cols, examples):
     if col.button(label, use_container_width=True):

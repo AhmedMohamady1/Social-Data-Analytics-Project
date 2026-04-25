@@ -19,7 +19,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent  # Task_4/
 TASK_3_ROOT = PROJECT_ROOT.parent / "Task_3"
 
 # --- Paths ---
-labeled_csv = TASK_3_ROOT / "Cleaned_Iran_War_Sentiment_with_Sentiment_Labels.csv"
+labeled_csv = TASK_3_ROOT / "data" / "Cleaned_Iran_War_Sentiment_with_Sentiment_Labels.csv"
 original_csv = PROJECT_ROOT.parent / "Task_2" / "Iran_War_Sentiment.csv"
 existing_test_features = PROJECT_ROOT / "data" / "glove_test_style_c.csv"
 output_csv = PROJECT_ROOT / "data" / "test_set_with_ground_truth.csv"

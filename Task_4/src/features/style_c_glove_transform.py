@@ -15,9 +15,10 @@ from src.config import TASK_3_ROOT, GLOVE_MODEL_NAME
 
 @lru_cache(maxsize=1)
 def __get_preprocessing_pipeline():
-    # Insert path to Task_3 into sys.path to import cleaning_pipeline
-    if str(TASK_3_ROOT) not in sys.path:
-        sys.path.append(str(TASK_3_ROOT))
+    # Insert path to Task_3/src into sys.path to import cleaning_pipeline
+    task3_src = str(TASK_3_ROOT / "src")
+    if task3_src not in sys.path:
+        sys.path.append(task3_src)
     
     from cleaning_pipeline import PreprocessingPipeline
     return PreprocessingPipeline()

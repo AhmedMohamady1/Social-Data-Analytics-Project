@@ -386,7 +386,7 @@ def main() -> None:
     parser.add_argument(
         "--input_csv",
         type=Path,
-        default=TASK_3_ROOT / "Cleaned_Iran_War_Sentiment_with_Sentiment_Labels.csv",
+        default=TASK_3_ROOT / "data" / "Cleaned_Iran_War_Sentiment_with_Sentiment_Labels.csv",
     )
     parser.add_argument(
         "--cleaning_script",
